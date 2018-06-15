@@ -1,10 +1,18 @@
 #include <stdio.h>
-#include <opencv2/opencv.hpp>
+#include <iostream>
+#include "opencv2/opencv_modules.hpp"
+#include "opencv2/core/core.hpp"
+#include "opencv2/highgui/highgui.hpp"
+#include "opencv2/xfeatures2d.hpp"
 
 using namespace cv;
+using namespace cv::xfeatures2d;
 
+void readme(){
+    std::cout << " Usage: ./DisplayImage <img1> <img2>" << std::endl;
+}
 
-void brightness_and_contrast(Mat &I, Mat &new_image, float alpha, float beta){
+void BrightnessAndContrast(Mat &I, Mat &new_image, float alpha, float beta){
 
     for( int y = 0; y < I.rows; y++){
         for( int x = 0; x < I.cols; x++){
@@ -19,31 +27,30 @@ int main(int argc, char** argv )
 {
     std::cout << "OpenCV Version: " << CV_MAJOR_VERSION << ".";
     std::cout << CV_MINOR_VERSION << std::endl;
-    if ( argc != 2 )
-    {
-        printf("usage: DisplayImage.out <Image_Path>\n");
-        return -1;
+
+    if( argc != 3 ){
+        readme(); return -1;
     }
 
-    Mat image;
-    image = imread( argv[1], 1 );
-    Mat new_image = Mat::zeros(image.size(), image.type());
-    brightness_and_contrast(image, new_image, 2.2, 50.0);
+    Mat img_1 = imread( argv[1], CV_LOAD_IMAGE_GRAYSCALE);
+    Mat img_2 = imread( argv[2], CV_LOAD_IMAGE_GRAYSCALE);
+    
+    int min_hessian = 400;
+    Ptr<SURF> detector = SURF::create( min_hessian);
 
-    std::cout << "number of rows: " << image.rows << std::endl;
-    std::cout << "number of cols: " << image.cols << std::endl;
-    std::cout << "number of channels: " << image.channels() << std::endl;
+    std::vector<KeyPoint> keypoints_1, keypoints_2;
 
-    if ( !image.data )
-    {
-        printf("No image data \n");
-        return -1;
-    }
-    namedWindow("Display Image", WINDOW_AUTOSIZE );
-    imshow("Display Image", image);
-    imshow("Display New Image", new_image);
+    detector->detect( img_1, keypoints_1);
+    detector->detect( img_2, keypoints_2);
 
+    Mat img_keypoints_1; Mat img_keypoints_2;
+
+    drawKeyPoints( img_1, keypoints_1, img_keypoints_1, Scalar::all(-1), DrawMatchesFlags::DEFAULT);
+    drawKeypoints( img_2, keypoints_2, img_keypoints_2, Scalar::all(-1), DrawMatchesFlags::DEFAULT);
+
+    imshow("Keypoints 1", img_keypoints_1);
+    imshow("Keypoints 2", img_keypoints_2);
+    
     waitKey(0);
-
     return 0;
 }
