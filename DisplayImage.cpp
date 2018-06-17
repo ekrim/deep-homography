@@ -4,6 +4,11 @@
 #include "opencv2/core/core.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/xfeatures2d.hpp"
+#include "opencv2/opencv.hpp"
+#include "opencv2/imgproc/imgproc.hpp"
+#include "opencv2/calib3d/calib3d.hpp"
+#include "opencv2/features2d/features2d.hpp"
+#include "opencv2/videoio.hpp"
 
 using namespace cv;
 using namespace cv::xfeatures2d;
@@ -45,7 +50,7 @@ int main(int argc, char** argv )
 
     Mat img_keypoints_1; Mat img_keypoints_2;
 
-    drawKeyPoints( img_1, keypoints_1, img_keypoints_1, Scalar::all(-1), DrawMatchesFlags::DEFAULT);
+    drawKeypoints( img_1, keypoints_1, img_keypoints_1, Scalar::all(-1), DrawMatchesFlags::DEFAULT);
     drawKeypoints( img_2, keypoints_2, img_keypoints_2, Scalar::all(-1), DrawMatchesFlags::DEFAULT);
 
     imshow("Keypoints 1", img_keypoints_1);
