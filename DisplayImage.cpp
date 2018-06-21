@@ -14,7 +14,7 @@ using namespace cv;
 using namespace cv::xfeatures2d;
 
 void readme(){
-    std::cout << " Usage: ./DisplayImage <img1> <img2>" << std::endl;
+    std::cout << " Usage: ./DisplayImage <img1>" << std::endl;
 }
 
 void BrightnessAndContrast(Mat &I, Mat &new_image, float alpha, float beta){
@@ -33,28 +33,15 @@ int main(int argc, char** argv )
     std::cout << "OpenCV Version: " << CV_MAJOR_VERSION << ".";
     std::cout << CV_MINOR_VERSION << std::endl;
 
-    if( argc != 3 ){
+    if( argc != 2){
         readme(); return -1;
     }
 
-    Mat img_1 = imread( argv[1], CV_LOAD_IMAGE_GRAYSCALE);
-    Mat img_2 = imread( argv[2], CV_LOAD_IMAGE_GRAYSCALE);
-    
-    int min_hessian = 400;
-    Ptr<SURF> detector = SURF::create( min_hessian);
-
-    std::vector<KeyPoint> keypoints_1, keypoints_2;
-
-    detector->detect( img_1, keypoints_1);
-    detector->detect( img_2, keypoints_2);
-
-    Mat img_keypoints_1; Mat img_keypoints_2;
-
-    drawKeypoints( img_1, keypoints_1, img_keypoints_1, Scalar::all(-1), DrawMatchesFlags::DEFAULT);
-    drawKeypoints( img_2, keypoints_2, img_keypoints_2, Scalar::all(-1), DrawMatchesFlags::DEFAULT);
-
-    imshow("Keypoints 1", img_keypoints_1);
-    imshow("Keypoints 2", img_keypoints_2);
+    Mat img = imread( argv[1], CV_LOAD_IMAGE_COLOR);
+     
+    circle(img, Point(0, 0), 10.0, Scalar(0, 0, 255), -1, 8);
+    //namedWindow( "display window", WINDOW_AUTOSIZE);
+    imshow("Keypoints 1", img);
     
     waitKey(0);
     return 0;
