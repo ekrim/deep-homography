@@ -38,11 +38,37 @@ int main(int argc, char** argv )
     }
 
     Mat img = imread( argv[1], CV_LOAD_IMAGE_COLOR);
+
+    std::vector<Point2f> pts1;
+    pts1.push_back(Point2f(50, 50));
+    pts1.push_back(Point2f(500, 50));
+    pts1.push_back(Point2f(500, 300));
+    pts1.push_back(Point2f(50, 300));
+   
+    std::vector<Point2f> pts2;
+    pts2.push_back(Point2f(35, 59));
+    pts2.push_back(Point2f(509, 58));
+    pts2.push_back(Point2f(484, 313));
+    pts2.push_back(Point2f(39, 293));
+
+    Mat h = findHomography(pts1, pts2);
      
-    circle(img, Point(0, 0), 10.0, Scalar(0, 0, 255), -1, 8);
+    Mat img_new;
+    warpPerspective(img, img_new, h, img.size());
+
+    circle(img, pts1[0], 2.0, Scalar(255, 0, 0), -1, 8);
+    circle(img, pts1[1], 2.0, Scalar(0, 255, 0), -1, 8);
+    circle(img, pts1[2], 2.0, Scalar(0, 0, 255), -1, 8);
+    circle(img, pts1[3], 2.0, Scalar(255, 0, 255), -1, 8);
+
+    circle(img, pts2[0], 2.0, Scalar(255, 0, 0), -1, 8);
+    circle(img, pts2[1], 2.0, Scalar(0, 255, 0), -1, 8);
+    circle(img, pts2[2], 2.0, Scalar(0, 0, 255), -1, 8);
+    circle(img, pts2[3], 2.0, Scalar(255, 0, 255), -1, 8);
     //namedWindow( "display window", WINDOW_AUTOSIZE);
-    imshow("Keypoints 1", img);
-    
+
+    imshow("Source image", img);
+    imshow("Warped source image", img_new);
     waitKey(0);
     return 0;
 }
