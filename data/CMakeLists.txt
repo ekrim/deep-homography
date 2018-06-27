@@ -8,4 +8,4 @@ MESSAGE(STATUS "Include dirs ${OpenCV_INCLUDE_DIRS}")
 MESSAGE(STATUS "LINK LIBRARIES ${OpenCV_LIBS}")
 
 add_executable( make_homography_data make_homography_data.cpp )
-target_link_libraries( make_homography_data ${OpenCV_LIBS} )
+target_link_libraries( make_homography_data ${OpenCV_LIBS} stdc++fs)
