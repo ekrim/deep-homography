@@ -45,20 +45,29 @@ void print_dim(Mat& x){
 
 
 void make_points(
-    Mat& img, vector<Point2f>& pts, std::mt19937& gen, 
-    int patch_rows, int patch_cols, int offset){
+    Mat& img, vector<Point2f>& pts1, vector<Point2f>& pts2, 
+    std::mt19937& gen, 
+    int patch_rows, int patch_cols, int max_jitter){
 
-  int margin = img.rows/2 - patch_rows/2;
-  if (margin < offset){
-    offset = margin;
+  int max_center_shift = img.rows/2 - patch_rows/2; max_jitter;
+  if (img.rows/2 < patch_rows/2){
+    throw "image not big enough for patch";
+
+  } else if (img.rows/2 - patch_rows/2 < max_jitter){
+    max_shift = margin;
+
+  } else if (max_center_shift - max_jitter){
+    max_center_shift = max_center_shift 
+    max_jitter; 
   }
   
-  delta_y = img.rows/2 - patch_rows/2 >= offset ? offet
-  randint(gen, 0, img.rows/2 - 
-  pts.push_back(Point2f(offset, offset));
-  pts.push_back(Point2f(img.cols-offset, offset));
-  pts.push_back(Point2f(img.cols-offset, img.rows-offset));
-  pts.push_back(Point2f(offset, img.rows-offset));
+  delta_y = img.rows/2 - patch_rows/2 >= offset 
+  delta_y = randint(gen, 0, img.rows/2 - offset)
+
+  pts1.push_back(Point2f(offset, offset));
+  pts1.push_back(Point2f(img.cols-offset, offset));
+  pts1.push_back(Point2f(img.cols-offset, img.rows-offset));
+  pts1.push_back(Point2f(offset, img.rows-offset));
 }
 
 
