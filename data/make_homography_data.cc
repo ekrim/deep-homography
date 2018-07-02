@@ -57,9 +57,9 @@ int main(int argc, char** argv ){
 
     Patch patch(img, patch_size, max_jitter);
     patch.random_shift(gen);
-    vector<Point2f> pts1 = patch.get_corners();
+    vector<Point> pts1 = patch.get_corners();
     patch.random_skew(gen);
-    vector<Point2f> pts2 = patch.get_corners();
+    vector<Point> pts2 = patch.get_corners();
 
     cout << pts1 << endl;
     cout << pts2 << endl;

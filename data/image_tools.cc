@@ -29,14 +29,14 @@ void print_dim(Mat& x){
 }
 
 
-void plot_pts(Mat& img, vector<Point2f>& pts){
+void plot_pts(Mat& img, vector<Point>& pts){
   for (auto const& pt : pts){
     circle(img, pt, 3.0, BLUE, -1, 8);
   }
 }
 
 
-void draw_poly(Mat& img, vector<Point2f>& pts, const Scalar& color, int thickness){
+void draw_poly(Mat& img, vector<Point>& pts, const Scalar& color, int thickness){
   for (vector<int>::size_type i = 0; i != pts.size(); i++){
     int i_next = (i == pts.size()-1) ? 0 : i+1;  
     line(img, pts[i], pts[i_next], color, thickness);
@@ -63,10 +63,10 @@ Patch::Patch(Mat& img, int patch_size, int max_jitter)
   max_jitter = x_margin > max_jitter ? max_jitter : x_margin; 
   max_jitter = y_margin > max_jitter ? max_jitter : y_margin; 
 
-  corners.push_back(Point2f(x_margin, y_margin));
-  corners.push_back(Point2f(x_margin+patch_size, y_margin));
-  corners.push_back(Point2f(x_margin+patch_size, y_margin+patch_size)); 
-  corners.push_back(Point2f(x_margin, y_margin+patch_size));
+  corners.push_back(Point(x_margin, y_margin));
+  corners.push_back(Point(x_margin+patch_size, y_margin));
+  corners.push_back(Point(x_margin+patch_size, y_margin+patch_size)); 
+  corners.push_back(Point(x_margin, y_margin+patch_size));
 }
 
 
@@ -96,6 +96,6 @@ void Patch::random_skew(std::mt19937& gen){
 
 
 // return the vector of corners
-vector<Point2f> Patch::get_corners(){
+vector<Point> Patch::get_corners(){
   return corners;  
 }
