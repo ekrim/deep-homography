@@ -21,30 +21,32 @@ namespace fs = std::experimental::filesystem;
 
 
 void readme(){
-  cout << " Usage: ./make_homography_data <img_directory>" << endl;
+  cout << " Usage: ./make_homography_data <img_directory> <int_patch_size> <int_max_jitter> <bool_show_plots>" << endl;
 }
 
 
 int main(int argc, char** argv ){
+  std::string dir_name(argv[1]);
+  int patch_size = atoi(argv[2]);
+  int max_jitter = atoi(argv[3]);
+  
   cout << "OpenCV Version: " << CV_MAJOR_VERSION << ".";
   cout << CV_MINOR_VERSION << endl;
   
-  int offset = 80;
-
-  bool show_plots;
-
-  if (argc == 2){
-    show_plots = false;
-  } else if (argc == 3){
-    show_plots = (bool)atoi(argv[2]);
-  } else {
+  bool show_plots = false;
+  if (argc == 5){
+    show_plots = (bool)atoi(argv[4]);
+  } else if (argc > 5 || argc < 4){
     readme(); return -1;
   } 
  
+  unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+  std::mt19937 gen(seed);
+ 
   int cnt = 0; 
-  for (auto const& f_it: fs::directory_iterator(argv[1])){
+  char new_file[50];
+  for (auto const& f_it: fs::directory_iterator(dir_name)){
    
-    char new_file[50];
     sprintf(new_file, "../synth_data/%09d.jpg", cnt);
     cout << new_file << endl;
 
@@ -53,10 +55,7 @@ int main(int argc, char** argv ){
     Mat img = imread( img_file, CV_LOAD_IMAGE_COLOR);
     print_dim(img);
 
-    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-    std::mt19937 generator(seed);
-
-    Patch patch(gen, patch_size, max_jitter);
+    Patch patch(img, patch_size, max_jitter);
     patch.random_shift(gen);
     vector<Point2f> pts1 = patch.get_corners();
     patch.random_skew(gen);

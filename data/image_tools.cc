@@ -44,31 +44,47 @@ void draw_poly(Mat& img, vector<Point2f>& pts, const Scalar& color, int thicknes
 }
 
 
-Patch::Patch(Mat& img, int patch_size, int max_jitter) : max_x(img.cols), max_y(img.rows), patch_size(patch_size), max_jitter(max_jitter) {
-  if (patch_size > max_x || patch_size > max_y){
+Patch::Patch(Mat& img, int patch_size, int max_jitter) 
+    : x_max(img.cols)
+    , y_max(img.rows)
+    , patch_size(patch_size)
+    , max_jitter(max_jitter) {
+
+  if (patch_size > x_max || patch_size > y_max){
     throw "image not big enough for patch";
   }
-  if (max_jitter + (patch_size
-  corners[0] = 
+  
+  if (max_jitter >= patch_size/2){
+    throw "too much jitter!";
+  }
+
+  int x_margin = (x_max - patch_size)/2;
+  int y_margin = (y_max - patch_size)/2;
+  max_jitter = x_margin > max_jitter ? max_jitter : x_margin; 
+  max_jitter = y_margin > max_jitter ? max_jitter : y_margin; 
+
+  corners.push_back(Point2f(x_margin, y_margin));
+  corners.push_back(Point2f(x_margin+patch_size, y_margin));
+  corners.push_back(Point2f(x_margin+patch_size, y_margin+patch_size)); 
+  corners.push_back(Point2f(x_margin, y_margin+patch_size));
 }
 
 
 void Patch::random_shift(std::mt19937& gen){
-  int x_margin = (max_x - patch_size)/2;  
-  int y_margin = (max_y - patch_size)/2;
-  for (auto const& pt : corners){
-    
+  int max_x_shift = corners[0].x - max_jitter;  
+  int max_y_shift = corners[0].y - max_jitter;
+
+  int delta_x = randint(gen, -max_x_shift, max_x_shift); 
+  int delta_y = randint(gen, -max_y_shift, max_y_shift); 
+  for (auto& pt : corners){
+    pt.x += delta_x;
+    pt.y += delta_y;
   }
-
-  int delta_x = get_delta(gen, x_margin);
-  int delta_y = get_delta(gen, y_margin);
-
-  shift_patch(delta_x, delta_y);
 }
 
 
 void Patch::random_skew(std::mt19937& gen){
-  for (auto const& pt : corners){
+  for (auto& pt : corners){
     pt.x += randint(gen, -max_jitter, max_jitter);
     pt.x = pt.x < 0 ? 0 : pt.x;
     pt.x = pt.x >= x_max ? x_max : pt.x;
@@ -82,28 +98,4 @@ void Patch::random_skew(std::mt19937& gen){
 // return the vector of corners
 vector<Point2f> Patch::get_corners(){
   return corners;  
-}
-
-
-// shift the patch by a given amount
-void Patch::shift_patch(int delta_x, int delta_y){
-  for (auto const& pt : corners){
-    pt.x += delta_x;
-    pt.y += delta_y
-  }
-}
-
-
-// given a desired available margin, compute the delta shift for the patch
-int Patch::get_delta(std::mt19937& gen, int margin){ 
-  // if the margin cant fit in the desired jitter, split the difference
-  if (margin - max_jitter < 0){
-    max_jitter = margin/2;
-    margin /= 2;
-  // otherwise, remove the space reserved for jitter 
-  } else {
-    margin -= max_jitter; 
-  }
-  int delta = randint(gen, -margin, margin);
-  return delta;    
 }
