@@ -18,15 +18,15 @@ void plot_pts(cv::Mat& img, std::vector<cv::Point2f>& pts);
 void draw_poly(cv::Mat& img, std::vector<cv::Point2f>& pts, const cv::Scalar& color, int thickness=1);
 
 class Patch {
-  private:
-    int max_x, max_y;
+    int x_max, y_max, max_jitter;
+    std::vector<cv::Point2f> corners(4);
 
   public:
-    int x_left, x_right, y_left, y_right;
-    Patch(cv::Mat& img, int patch_size);
+    Patch(cv::Mat& img, int patch_size, int max_jitter);
 
-    void random_shift(void);
-    void random_skew(void);
+    std::vector<Point2f> get_corners(); 
+    void random_shift(std::mt19937& gen);
+    void random_skew(std::mt19937& gen);
 
 };
 

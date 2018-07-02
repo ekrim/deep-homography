@@ -42,7 +42,7 @@ int main(int argc, char** argv ){
   } 
  
   int cnt = 0; 
-  for (auto& f_it: fs::directory_iterator(argv[1])){
+  for (auto const& f_it: fs::directory_iterator(argv[1])){
    
     char new_file[50];
     sprintf(new_file, "../synth_data/%09d.jpg", cnt);
@@ -55,17 +55,14 @@ int main(int argc, char** argv ){
 
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     std::mt19937 generator(seed);
-    vector<Point2f> pts1, pts2;
-    pts1.push_back(Point2f(50,50));
-    pts1.push_back(Point2f(400,50));
-    pts1.push_back(Point2f(400,400));
-    pts1.push_back(Point2f(50,400));
 
-    pts2.push_back(Point2f(60,60));
-    pts2.push_back(Point2f(410,60));
-    pts2.push_back(Point2f(410,410));
-    pts2.push_back(Point2f(60,410));
+    Patch patch(gen, patch_size, max_jitter);
+    patch.random_shift(gen);
+    vector<Point2f> pts1 = patch.get_corners();
+    patch.random_skew(gen);
+    vector<Point2f> pts2 = patch.get_corners();
 
+    cout << pts1 << endl;
     cout << pts2 << endl;
 
     Mat h = findHomography(pts1, pts2).inv();
