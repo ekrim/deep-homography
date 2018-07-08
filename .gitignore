@@ -3,3 +3,4 @@ data/synth_data/
 data/unlabeled2017/
 **/*.swp
 **/*.gch
+**/*.tfrecords
