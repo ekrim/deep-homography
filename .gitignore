@@ -1,6 +1,7 @@
 data/build/
 data/synth_data/
 data/unlabeled2017/
+data/*.txt
 **/*.swp
 **/*.gch
 **/*.tfrecords

@@ -44,28 +44,43 @@ int main(int argc, char** argv ){
   std::mt19937 gen(seed);
  
   int cnt = 0; 
-  char new_file[50];
+  char f_roi_orig[50];
+  char f_roi_warp[50];
+  char f_number[9];
+  std::ofstream f_labels("../label_file.txt");
   for (auto const& f_it: fs::directory_iterator(dir_name)){
-   
-    sprintf(new_file, "../synth_data/%09d.jpg", cnt);
-    cout << new_file << endl;
-
+     
+    // reading the file
     std::string img_file = f_it.path().string();
-    cout << img_file << endl;
+    //cout << img_file << endl;
     Mat img = imread( img_file, CV_LOAD_IMAGE_COLOR);
-    print_dim(img);
+    //print_dim(img);
 
+    if (img.rows > 256 && img.cols > 256){
+    // the new files
+    sprintf(f_number, "%09d", cnt);
+    sprintf(f_roi_orig, "../synth_data/%09d_orig.jpg", cnt);
+    sprintf(f_roi_warp, "../synth_data/%09d_warp.jpg", cnt);
+    //cout << f_roi_orig << endl;
+    f_labels << f_number << ";";
+
+    // patch and jittered patch
     Patch patch(img, patch_size, max_jitter);
     patch.random_shift(gen);
-    vector<Point> pts1 = patch.get_corners();
+    vector<Point2f> pts1 = patch.get_corners();
     patch.random_skew(gen);
-    vector<Point> pts2 = patch.get_corners();
-
-    cout << pts1 << endl;
-    cout << pts2 << endl;
+    vector<Point2f> pts2 = patch.get_corners();
 
     Mat h = findHomography(pts1, pts2).inv();
      
+    // save the label data
+    for (int i_pts = 0; i_pts < pts1.size(); ++i_pts){
+      f_labels << pts2[i_pts].x - pts1[i_pts].x << ",";
+      f_labels << pts2[i_pts].y - pts1[i_pts].y << ",";
+    }
+    f_labels << endl;
+
+    // apply the transformation
     Mat img_new;
     warpPerspective(img, img_new, h, img.size());
 
@@ -82,6 +97,7 @@ int main(int argc, char** argv ){
     int width = pts1[1].x - pts1[0].x;
     int height = pts1[2].y - pts1[1].y;
  
+    // convert the original roi to grayscale
     Mat roi = Mat(img, Rect(pts1[0].x, pts1[0].y, width, height)).clone();
     Mat roi_gray(roi);
     cvtColor(roi, roi_gray, CV_RGB2GRAY);
@@ -89,8 +105,9 @@ int main(int argc, char** argv ){
     if (show_plots){
       imshow("Source rect", roi_gray);
     }
-    imwrite(new_file, roi);
+    imwrite(f_roi_orig, roi_gray);
 
+    // convert the warped roi to grayscale
     Mat roi_new = Mat(img_new, Rect(pts1[0].x, pts1[0].y, width, height)).clone();
     Mat roi_new_gray(roi_new);
     cvtColor(roi_new, roi_new_gray, CV_RGB2GRAY);
@@ -98,7 +115,12 @@ int main(int argc, char** argv ){
       imshow("Warped rect", roi_new_gray);
       waitKey(0);
     }
+    imwrite(f_roi_warp, roi_new_gray);
+    cout << cnt << endl;
     cnt++;
+    }
   }
+
+  f_labels.close();
   return 0;
 }
