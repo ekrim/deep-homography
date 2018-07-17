@@ -22,5 +22,10 @@ cd build
 ./make_homography_data ../unlabeled2017 <int_patch_size> <int_max_jitter>
 ```
 
-Use a patch size of 128 and a max jitter of 30 to reproduce my results.
+Use a patch size of 128 and a max jitter of 32 to reproduce my results.
 
+To turn the images into `.tfrecords`, run:
+
+```
+python make_tfrecords.py
+```
