@@ -17,10 +17,22 @@ def jpg_reader(filename):
   return np.asarray(img)
 
 
+class Normalize:
+  def __call__(self, sample):
+    image, label = sample['image'], sample['label']
+    image = image.transpose((2,0,1))
+    image = 2*(image/255) - 1
+
+    return {'image': torch.from_numpy(image),
+            'label': torch.from_numpy(label)}
+
+
 class HomographyDataset(Dataset):
   def __init__(self): 
     img_dir = 'data/synth_data'
     assert os.path.isdir(img_dir), 'Download the MSCOCO dataset and prepare it' 
+    self.transforms = transforms.Compose([
+      Normalize()])
   
     with open('data/label_file.txt', 'r') as f:
       self.num_and_label = [line.rstrip().rstrip(',').split(';') for line in f]
@@ -39,8 +51,9 @@ class HomographyDataset(Dataset):
     label_str = self.num_and_label[idx][1] 
     label = np.array([float(el) for el in label_str.split(',')]).astype(np.float32)
     sample = {
-      'image': torch.from_numpy(img.transpose((2,0,1))),
-      'label': torch.from_numpy(label)}
+      'image': img,
+      'label': label}
+    sample = self.transforms(sample)
     return sample
 
 

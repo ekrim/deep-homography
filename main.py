@@ -10,8 +10,12 @@ from models import Net
 from pipeline import HomographyDataset 
 
 
-def main(dataloader, epochs):
+def train(dataloader, epochs):
+  device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+  print(device)
+
   net = Net()
+  net.to(device)
   criterion = nn.MSELoss()
   optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
  
@@ -19,9 +23,10 @@ def main(dataloader, epochs):
     running_loss = 0.0
     for i, data in enumerate(dataloader):
       optimizer.zero_grad()
+      inputs, labels = data['image'].to(device), data['label'].to(device)
    
-      outputs = net(data['image'])
-      loss = criterion(outputs, data['label'])
+      outputs = net(inputs)
+      loss = criterion(outputs, labels)
       loss.backward()
       optimizer.step()
 
@@ -32,7 +37,7 @@ def main(dataloader, epochs):
 
 
 if __name__ == '__main__':
-  epochs, batch_size = 2, 64
+  epochs, batch_size = 2, 2
   
   dataset = HomographyDataset()
   dataloader = DataLoader(
@@ -41,4 +46,4 @@ if __name__ == '__main__':
     shuffle=True,
     num_workers=4)
 
-  main(dataloader, epochs)
+  train(dataloader, epochs)
