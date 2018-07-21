@@ -5,3 +5,4 @@ data/*.txt
 **/*.swp
 **/*.gch
 **/*.tfrecords
+**/__pycache__/

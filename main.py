@@ -2,35 +2,43 @@ import numpy as np
 import torch
 import torchvision
 import torch.nn as nn
+import torch.optim as optim
 import torch.nn.functional as F
+from torch.utils.data import DataLoader
+
+from models import Net
+from pipeline import HomographyDataset 
 
 
-class Net(nn.Module):
-  def __init__(self):
-    super().__init__()
-    self.conv1 = nn.Conv2d(2, 16, 5)
-    self.pool1 = nn.AvgPool2d(4)
-    self.conv2 = nn.Conv2d(16, 32, 4)
-    self.pool2 = nn.AvgPool2d(3)
-    self.conv3 = nn.Conv2d(32, 1, 3)
-    self.fc1 = nn.Linear(1*9*9, 64)
-    self.fc2 = nn.Linear(64, 64)
-    self.fc3 = nn.Linear(64, 64)
-    self.fc4 = nn.Linear(64, 64)
-    self.fc5 = nn.Linear(64, 8)
-    
-  def forward(self, x):
-    x = self.pool1(F.relu(self.conv1(x)))
-    x = self.pool2(F.relu(self.conv2(x)))
-    x = F.relu(self.conv3(x))
-    x = x.view(-1, 1*9*9)
-    x = F.relu(self.fc1(x)) 
-    x = F.relu(self.fc2(x)) 
-    x = F.relu(self.fc3(x)) 
-    x = F.relu(self.fc4(x)) 
-    x = self.fc5(x) 
-    return x
+def main(dataloader, epochs):
+  net = Net()
+  criterion = nn.MSELoss()
+  optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
+ 
+  for epoch in range(epochs):
+    running_loss = 0.0
+    for i, data in enumerate(dataloader):
+      optimizer.zero_grad()
+   
+      outputs = net(data['image'])
+      loss = criterion(outputs, data['label'])
+      loss.backward()
+      optimizer.step()
+
+      running_loss += loss.item()
+      if i % 2000 == 1999:
+        print('epoch {:d}, batch {:d}: loss {:0.3f}'.format(epoch, i, running_loss/2000))
+        running_loss = 0.0
 
 
 if __name__ == '__main__':
-  net = Net()
+  epochs, batch_size = 2, 64
+  
+  dataset = HomographyDataset()
+  dataloader = DataLoader(
+    dataset,
+    batch_size=batch_size,
+    shuffle=True,
+    num_workers=4)
+
+  main(dataloader, epochs)
