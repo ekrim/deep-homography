@@ -12,14 +12,14 @@ from models import Net
 from pipeline import HomographyDataset 
 
 
-def train(dataloader_train, dataloader_eval, epochs):
+def train(dataloader_train, dataloader_eval, epochs, lr):
   device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
   print(device)
 
   net = Net()
   net.to(device)
   criterion = nn.MSELoss()
-  optimizer = optim.Adam(net.parameters(), lr=0.001)
+  optimizer = optim.Adam(net.parameters(), lr=lr)
 
   log_every = len(dataloader_train)//2
  
@@ -42,6 +42,12 @@ def train(dataloader_train, dataloader_eval, epochs):
           running_loss += loss.item()
         running_loss /= len(dataloader_eval)
         print('epoch {:d}, batch {:d}: loss {:0.3f}'.format(epoch, i, running_loss))
+        print('true labels')
+        print(labels.detach().cpu().numpy()[:3])
+        print('predicted labels')
+        print(outputs.detach().cpu().numpy()[:3])
+        print('images')
+        print(inputs.detach().cpu().numpy()[:3, 0, :3, :3])
 
 
 if __name__ == '__main__':
@@ -49,10 +55,12 @@ if __name__ == '__main__':
   parser.add_argument('--epochs', type=int, default=2)
   parser.add_argument('--batch_size', type=int, default=64)
   parser.add_argument('--val_frac', type=float, default=0.05)
+  parser.add_argument('--lr', type=float, default=0.01)
   args = parser.parse_args(sys.argv[1:])
   epochs = args.epochs
   batch_size = args.batch_size
   val_frac = args.val_frac
+  lr = args.lr
   
   dataset_train = HomographyDataset(val_frac=val_frac, mode='train')
   dataset_eval = HomographyDataset(val_frac=val_frac, mode='eval')
@@ -68,4 +76,4 @@ if __name__ == '__main__':
     shuffle=False,
     num_workers=2)
 
-  train(dataloader_train, dataloader_eval, epochs)
+  train(dataloader_train, dataloader_eval, epochs, lr)

@@ -22,6 +22,7 @@ class Normalize:
     image, label = sample['image'], sample['label']
     image = image.transpose((2,0,1))
     image = 2*(image/255) - 1
+    label = label/128
 
     return {'image': torch.from_numpy(image),
             'label': torch.from_numpy(label)}
