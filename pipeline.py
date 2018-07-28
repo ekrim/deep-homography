@@ -28,15 +28,25 @@ class Normalize:
 
 
 class HomographyDataset(Dataset):
-  def __init__(self): 
+  def __init__(self, val_frac=0.05, mode='train'): 
     img_dir = 'data/synth_data'
     assert os.path.isdir(img_dir), 'Download the MSCOCO dataset and prepare it' 
     self.transforms = transforms.Compose([
       Normalize()])
   
     with open('data/label_file.txt', 'r') as f:
-      self.num_and_label = [line.rstrip().rstrip(',').split(';') for line in f]
+      num_and_label = [line.rstrip().rstrip(',').split(';') for line in f]
+
+    L = len(num_and_label)
+    idx = int(val_frac*L)
     
+    if mode == 'train':
+      self.num_and_label = num_and_label[idx:]
+    elif mode == 'eval':
+      self.num_and_label = num_and_label[:idx]
+    else:
+      raise ValueError('no such mode')
+      
   def __len__(self):
     return len(self.num_and_label)
 
