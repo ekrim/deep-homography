@@ -44,11 +44,11 @@ void draw_poly(Mat& img, vector<Point2f>& pts, const Scalar& color, int thicknes
 }
 
 
-Patch::Patch(Mat& img, int patch_size, int max_jitter) 
+Patch::Patch(Mat& img, int patch_size, int jitt) 
     : x_max(img.cols)
     , y_max(img.rows)
     , patch_size(patch_size)
-    , max_jitter(max_jitter) {
+    , max_jitter(jitt) {
 
   if (patch_size > x_max || patch_size > y_max){
     throw "image not big enough for patch";

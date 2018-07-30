@@ -49,6 +49,7 @@ int main(int argc, char** argv ){
   char f_number[9];
   std::ofstream f_labels("../label_file.txt");
   for (auto const& f_it: fs::directory_iterator(dir_name)){
+    cout << cnt << endl;
      
     // reading the file
     std::string img_file = f_it.path().string();
@@ -56,7 +57,7 @@ int main(int argc, char** argv ){
     Mat img = imread( img_file, CV_LOAD_IMAGE_COLOR);
     //print_dim(img);
 
-    if (img.rows > 256 && img.cols > 256){
+    if (img.rows > 300 && img.cols > 300){
     // the new files
     sprintf(f_number, "%09d", cnt);
     sprintf(f_roi_orig, "../synth_data/%09d_orig.jpg", cnt);
@@ -116,7 +117,6 @@ int main(int argc, char** argv ){
       waitKey(0);
     }
     imwrite(f_roi_warp, roi_new_gray);
-    cout << cnt << endl;
     cnt++;
     }
   }
