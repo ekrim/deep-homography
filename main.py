@@ -77,8 +77,6 @@ def test(dataloader_eval, device, net, criterion, epoch):
     print(labels.detach().cpu().numpy()[:3])
     print('predicted labels')
     print(outputs.detach().cpu().numpy()[:3])
-    print('images')
-    print(inputs.detach().cpu().numpy()[:3, 0, :3, :3])
 
 
 if __name__ == '__main__':
