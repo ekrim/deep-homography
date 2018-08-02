@@ -17,6 +17,8 @@ def main(args):
   batch_size = args.batch_size
   val_frac = args.val_frac
   lr = args.lr
+  momentum = args.momentum
+  total_it = args.total_it
 
   device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
   print(device)
@@ -39,13 +41,21 @@ def main(args):
   net = Net()
   net.to(device)
   criterion = nn.MSELoss()
-  optimizer = optim.Adam(net.parameters(), lr=lr)
+  optimizer = optim.SGD(net.parameters(), momentum=momentum, lr=lr)
 
   log_every = len(dataloader_train)//2
  
-  for epoch in range(epochs):
+  n_it, lr_it = 0, 0
+  while n_it < total_it: 
     train(dataloader_train, device, net, criterion, optimizer)
-    test(dataloader_eval, device, net, criterion, epoch)
+    test(dataloader_eval, device, net, criterion, n_it)
+   
+    n_it += len(dataloader_train)
+    if lr_it >= 30000:
+      d = optimizer.state_dict()
+      d['param_groups'][0]['lr'] /= 10.0
+      optimizer.load_state_dict(d)
+      lr_it = 0
 
 
 def train(dataloader_train, device, net, criterion, optimizer):
@@ -60,7 +70,7 @@ def train(dataloader_train, device, net, criterion, optimizer):
     optimizer.step()
 
 
-def test(dataloader_eval, device, net, criterion, epoch):
+def test(dataloader_eval, device, net, criterion, n_it):
   net.eval()
   with torch.no_grad():
 
@@ -72,11 +82,11 @@ def test(dataloader_eval, device, net, criterion, epoch):
       running_loss += loss.item()
     running_loss /= len(dataloader_eval)
   
-    print('epoch {:d}:  {:0.4f}'.format(epoch, running_loss))
-    print('true labels')
-    print(labels.detach().cpu().numpy()[:3])
-    print('predicted labels')
-    print(outputs.detach().cpu().numpy()[:3])
+    print('{:d} iter.:  {:0.4f}'.format(n_it, running_loss))
+    #print('true labels')
+    #print(labels.detach().cpu().numpy()[:3])
+    #print('predicted labels')
+    #print(outputs.detach().cpu().numpy()[:3])
 
 
 if __name__ == '__main__':
@@ -84,6 +94,8 @@ if __name__ == '__main__':
   parser.add_argument('--epochs', type=int, default=2)
   parser.add_argument('--batch_size', type=int, default=64)
   parser.add_argument('--val_frac', type=float, default=0.05)
-  parser.add_argument('--lr', type=float, default=0.01)
+  parser.add_argument('--lr', type=float, default=0.005)
+  parser.add_argument('--momentum', type=float, default=0.9)
+  parser.add_argument('--total_it', type=int, default=90000)
   args = parser.parse_args(sys.argv[1:])
   main(args) 
