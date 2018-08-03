@@ -93,7 +93,7 @@ if __name__ == '__main__':
   parser = argparse.ArgumentParser()
   parser.add_argument('--epochs', type=int, default=2)
   parser.add_argument('--batch_size', type=int, default=64)
-  parser.add_argument('--val_frac', type=float, default=0.05)
+  parser.add_argument('--val_frac', type=float, default=0.01)
   parser.add_argument('--lr', type=float, default=0.005)
   parser.add_argument('--momentum', type=float, default=0.9)
   parser.add_argument('--total_it', type=int, default=90000)
