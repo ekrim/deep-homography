@@ -2,6 +2,7 @@ data/build/
 data/synth_data/
 data/unlabeled2017/
 data/*.txt
+*.pytorch
 **/*.swp
 **/*.gch
 **/*.tfrecords

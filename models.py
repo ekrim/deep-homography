@@ -7,7 +7,7 @@ import torch.nn.functional as F
 class Net(nn.Module):
   def __init__(self):
     super().__init__()
-    self.sample = nn.AvgPool2d(2)
+    #self.sample = nn.AvgPool2d(2)
     self.conv1 = nn.Conv2d(2, 64, 3, padding=1)
     self.bn1 = nn.BatchNorm2d(64)
     self.conv2 = nn.Conv2d(64, 64, 3, padding=1)
@@ -34,7 +34,7 @@ class Net(nn.Module):
     self.fc2 = nn.Linear(1024, 8)
     
   def forward(self, x):
-    x = self.sample(x)
+    #x = self.sample(x)
     x = self.bn1(F.relu(self.conv1(x)))
     x = self.bn2(self.pool1(F.relu(self.conv2(x))))
     x = self.bn3(F.relu(self.conv3(x)))
@@ -48,6 +48,7 @@ class Net(nn.Module):
     x = F.relu(self.fc1(x))
     x = self.bn9(self.drop2(x))
     x = self.fc2(x)
+    x = F.tanh(x)
    
     return x
 

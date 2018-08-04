@@ -48,9 +48,9 @@ def main(args):
   n_it, lr_it = 0, 0
   while n_it < total_it: 
     train(dataloader_train, device, net, criterion, optimizer)
+    n_it += len(dataloader_train)
     test(dataloader_eval, device, net, criterion, n_it)
    
-    n_it += len(dataloader_train)
     if lr_it >= 30000:
       d = optimizer.state_dict()
       d['param_groups'][0]['lr'] /= 10.0
@@ -82,6 +82,7 @@ def test(dataloader_eval, device, net, criterion, n_it):
       running_loss += loss.item()
     running_loss /= len(dataloader_eval)
   
+    torch.save(net.state_dict(), 'homography_model.pytorch')
     print('{:d} iter.:  {:0.4f}'.format(n_it, running_loss))
     #print('true labels')
     #print(labels.detach().cpu().numpy()[:3])
