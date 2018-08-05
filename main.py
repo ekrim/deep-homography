@@ -84,10 +84,6 @@ def test(dataloader_eval, device, net, criterion, n_it):
   
     torch.save(net.state_dict(), 'homography_model.pytorch')
     print('{:d} iter.:  {:0.4f}'.format(n_it, running_loss))
-    #print('true labels')
-    #print(labels.detach().cpu().numpy()[:3])
-    #print('predicted labels')
-    #print(outputs.detach().cpu().numpy()[:3])
 
 
 if __name__ == '__main__':

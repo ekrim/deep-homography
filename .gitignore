@@ -7,3 +7,5 @@ data/*.txt
 **/*.gch
 **/*.tfrecords
 **/__pycache__/
+*.jpg
+tmp/

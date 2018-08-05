@@ -29,8 +29,7 @@ class Normalize:
 
 
 class HomographyDataset(Dataset):
-  def __init__(self, val_frac=0.05, mode='train'): 
-    img_dir = 'data/synth_data'
+  def __init__(self, val_frac=0.05, mode='train', img_dir='data/synth_data'): 
     assert os.path.isdir(img_dir), 'Download the MSCOCO dataset and prepare it' 
     self.transforms = transforms.Compose([
       Normalize()])
