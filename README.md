@@ -19,13 +19,19 @@ Then run the data generation program:
 
 ```
 cd build
-./make_homography_data ../unlabeled2017 <int_patch_size> <int_max_jitter>
+./make_homography_data ../unlabeled2017 <int_patch_size> <int_max_jitter> <n_samples>
 ```
 
-Use a patch size of 128 and a max jitter of 32 to reproduce my results.
+Use a patch size of 128, a max jitter of 32, and 500,000 samples to reproduce my results.
 
-To turn the images into `.tfrecords`, run:
+To train the network (saves each epoch):
 
 ```
-python make_tfrecords.py
+python main.py
+```
+
+To see the performance on e.g. the 4th image:
+
+```
+python eval.py 3
 ```
