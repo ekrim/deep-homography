@@ -1,6 +1,8 @@
 ### Deep Homography
 
-A homography dataset can be constructed by taking a patch from an image and perturbing the corners. The 4 point correspondences between the original patch and the perturbed ones define a homography. A neural network can learn to produce the parameterized homography given the patches from the warped and unwarped image.
+A homography dataset can be constructed by taking a patch from an image and perturbing the corners. The 4 point correspondences between the original patch and the perturbed ones define a homography. A neural network can learn to produce the parameterized homography given the patches from the warped and unwarped image. 
+
+This repo reproduces the work of [DeTone et al. 2016](https://arxiv.org/pdf/1606.03798.pdf). Check out my [blog post](https://ekrim.github.io/computer/vision,pytorch,homography/2018/08/07/deep-homography-estimation.html) for more analysis.
 
 #### Making the data
 
@@ -30,8 +32,9 @@ To train the network (saves each epoch):
 python main.py
 ```
 
-To see the performance on e.g. the 4th image:
+To see the performance on, e.g., the 4th image:
 
 ```
 python eval.py 3
 ```
+![Original image, warped image, and original image warped with predicted homography](https://ekrim.github.io/assets/good_img_2.png)
