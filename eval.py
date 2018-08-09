@@ -1,3 +1,4 @@
+import argparse
 import sys
 import numpy as np
 import matplotlib.pyplot as plt
@@ -55,9 +56,22 @@ def pred_homography(batch, patch_size, model_file='homography_model.pytorch', sc
 
 
 if __name__ == '__main__':
-  i = int(sys.argv[1]) 
-  f1, f2 = 'data/synth_data/{:09d}_orig.jpg'.format(i), 'data/synth_data/{:09d}_warp.jpg'.format(i)
-  patch_size = 128
+  parser = argparse.ArgumentParser()
+  parser.add_argument('--patch_size', default=128, type=int, help='image patch size to resize to')
+  parser.add_argument('--i', default=-1, type=int, help='number of image pair in training set')
+  parser.add_argument('--file1', default='', type=str, help='file of image 1')  
+  parser.add_argument('--file2', default='', type=str, help='file of image 2')  
+  args = parser.parse_args(sys.argv[1:])
+  patch_size = args.patch_size
+  if args.i > -1: 
+    i = args.i
+    f1, f2 = 'data/synth_data/{:09d}_orig.jpg'.format(i), 'data/synth_data/{:09d}_warp.jpg'.format(i)
+
+  elif args.file1 != '' and args.file1 != '':
+    f1, f2 = args.file1, args.file2
+
+  else:
+    raise ValueError('specify file name pair or integer for image pair in training data')
 
   img1, img2, batch = prep_batch(f1, f2, patch_size)
   h = pred_homography(batch, patch_size)

@@ -33,5 +33,5 @@ python main.py
 To see the performance on e.g. the 4th image:
 
 ```
-python eval.py 3
+python eval.py --i 3
 ```
